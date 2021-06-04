@@ -37,7 +37,7 @@
 
 /*------------------------------------------ firmware update configuration (start) --------------------------------------------*/
 
-static uint8_t hyper[0x800000] __attribute((section("HYPER_RAM")));
+static uint8_t hyper[0x400000] __attribute((section("HYPER_RAM")));
 
 #define BOOT_LOADER_IMAGE_SIZE_BOT_ADR 0x218
 #define BOOT_LOADER_USER_FIRMWARE_HEADER_LENGTH 0x200
@@ -52,7 +52,7 @@ static uint32_t image_size = BOOT_LOADER_USER_FIRMWARE_DESCRIPTOR_LENGTH;
 #define BOOT_LOADER_UPDATE_EXECUTE_AREA_LOW_ADDRESS		(0x50200000)	// top address of exec area.
 #define USER_RESET_VECTOR_ADDRESS (0x50200300)	// The header of .rsu file uses 0x000 to 0x300.
 
-#define BOOT_LOADER_USER_FIRMWARE_MAXSIZE (0x800000 - BOOT_LOADER_USER_FIRMWARE_HEADER_LENGTH)
+#define BOOT_LOADER_USER_FIRMWARE_MAXSIZE (0x400000 - BOOT_LOADER_USER_FIRMWARE_HEADER_LENGTH)
 
 #define BOOT_LOADER_SUCCESS         (0)
 #define BOOT_LOADER_FAIL            (-1)

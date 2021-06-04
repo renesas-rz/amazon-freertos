@@ -463,12 +463,12 @@
 		<link>
 			<name>libraries/freertos_plus/standard/freertos_plus_tcp/portable/NetworkInterface/RZ/ether_callback.c</name>
 			<type>1</type>
-			<locationURI>AWS_IOT_MCU_ROOT/libraries/freertos_plus/standard/freertos_plus_tcp/portable/NetworkInterface/RZ/ether_callback.c</locationURI>
+			<locationURI>AWS_IOT_MCU_ROOT/vendors/renesas/boards/rza2m-gr-mango/ports/NetworkInterface/ether_callback.c</locationURI>
 		</link>
 		<link>
 			<name>libraries/freertos_plus/standard/freertos_plus_tcp/portable/NetworkInterface/RZ/NetworkInterface.c</name>
 			<type>1</type>
-			<locationURI>AWS_IOT_MCU_ROOT/libraries/freertos_plus/standard/freertos_plus_tcp/portable/NetworkInterface/RZ/NetworkInterface.c</locationURI>
+			<locationURI>AWS_IOT_MCU_ROOT/vendors/renesas/boards/rza2m-gr-mango/ports/NetworkInterface/NetworkInterface.c</locationURI>
 		</link>
 		<link>
 			<name>libraries/freertos_plus/standard/freertos_plus_tcp/portable/Compiler/GCC/pack_struct_end.h</name>

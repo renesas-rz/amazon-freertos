@@ -46,7 +46,7 @@ execution_address	= 0x505ffffc
 # Hardware ID
 hardware_id			= 0x00000009
 # Image Size
-image_size			= 0x00800000
+image_size			= 0x00400000
 # section Size
 section_size		= 4096
 
