@@ -48,13 +48,9 @@
  */
 
 /* Amazon FreeRTOS Includes. */
-// changed 2021/05/14 start
-/////#include "iot_pkcs11.h"
-/////#include "iot_pkcs11_config.h"
 #include "core_pkcs11.h"
 #include "iot_crypto.h"
 #include "core_pkcs11_config.h"
-// changed 2021/05/14 end
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -158,9 +154,7 @@ CK_RV PKCS11_PAL_Initialize( void )
 {
     int_t ret = NO_ERROR;
 
-// added 2021/05/14 start
     CRYPTO_Init();
-// added 2021/05/14 end
 
     memcpy(&pkcs_control_block_data,        (void*)PKCS_STORAGE_ADDRESS,        sizeof(pkcs_control_block_data));
     memcpy(&pkcs_control_block_data_mirror, (void*)PKCS_STORAGE_ADDRESS_MIRROR, sizeof(pkcs_control_block_data_mirror));
@@ -465,26 +459,17 @@ static void update_eeprom_data_from_image(void)
     uint32_t required_eeprom_block_num;
     int_t flash_error_code = NO_ERROR;
 
-// changed 2021/05/14 start
-/////    configPRINTF(("write OCTA Flash(main)...\r\n"));
     configPRINT(("write OCTA Flash(main)...\r\n"));
-// changed 2021/05/14 end
     
     flash_error_code = write_octaflash_data(PKCS_STORAGE_ADDRESS, &pkcs_control_block_data_image, sizeof(pkcs_control_block_data_image));
     if(NO_ERROR == flash_error_code)
     {
         memcpy((void *)&pkcs_control_block_data, (void*)PKCS_STORAGE_ADDRESS, sizeof(pkcs_control_block_data));
-// changed 2021/05/14 start
-/////        configPRINTF(("OK\r\n"));
         configPRINT(("OK\r\n"));
-// changed 2021/05/14 end
     }
     else
     {
-// changed 2021/05/14 start
-/////        configPRINTF(("Failed\r\n"));
         configPRINT(("Failed\r\n"));
-// changed 2021/05/14 end
         return;
     }
 
@@ -496,43 +481,27 @@ static void update_eeprom_data_mirror_from_image(void)
     uint32_t required_eeprom_block_num;
     int_t flash_error_code = NO_ERROR;
 
-// changed 2021/05/14 start
-/////    configPRINTF(("write OCTA Flash(mirror)...\r\n"));
     configPRINT(("write OCTA Flash(mirror)...\r\n"));
-// changed 2021/05/14 end
     flash_error_code = write_octaflash_data(PKCS_STORAGE_ADDRESS_MIRROR, &pkcs_control_block_data_image, sizeof(pkcs_control_block_data_image));
     if(NO_ERROR == flash_error_code)
     {
         memcpy((void *)&pkcs_control_block_data_mirror, PKCS_STORAGE_ADDRESS_MIRROR, sizeof(pkcs_control_block_data_mirror));
-// changed 2021/05/14 start
-/////        configPRINTF(("OK\r\n"));
         configPRINT(("OK\r\n"));
-// changed 2021/05/14 end
     }
     else
     {
-// changed 2021/05/14 start
-/////        configPRINTF(("Failed\r\n"));
-/////        configPRINTF(("Sample_RIIC_Eeprom_Write() returns error code = %d.\r\n", flash_error_code));
         configPRINT(("Failed\r\n"));
         configPRINT(("Sample_RIIC_Eeprom_Write() returns error code = %d.\r\n", flash_error_code));
-// changed 2021/05/14 end
         return;
     }
 
     if(!memcmp(&pkcs_control_block_data, &pkcs_control_block_data_mirror, sizeof(PKCS_CONTROL_BLOCK)))
     {
-// changed 2021/05/14 start
-/////        configPRINTF(("OCTA Flash setting OK.\r\n"));
         configPRINT(("OCTA Flash setting OK.\r\n"));
-// changed 2021/05/14 end
     }
     else
     {
-// changed 2021/05/14 start
-/////        configPRINTF(("OCTA Flash setting Failed.\r\n"));
         configPRINT(("OCTA Flash setting Failed.\r\n"));
-// changed 2021/05/14 end
         return;
     }
     return;
@@ -548,52 +517,32 @@ static int_t check_eeprom_area(uint32_t retry_counter)
 
     if(retry_counter)
     {
-// changed 2021/05/14 start
-/////        configPRINTF(("recover retry count = %d.\r\n", retry_counter));
         configPRINT(("recover retry count = %d.\r\n", retry_counter));
-// changed 2021/05/14 end
         if(retry_counter == MAX_CHECK_EEPROM_AREA_RETRY_COUNT)
         {
-// changed 2021/05/14 start
-/////            configPRINTF(("retry over the limit.\r\n"));
             configPRINT(("retry over the limit.\r\n"));
-// changed 2021/05/14 end
             while(1);
         }
     }
-// changed 2021/05/14 start
-/////    configPRINTF(("OCTA Flash(main) hash check...\r\n"));
     configPRINT(("OCTA Flash(main) hash check...\r\n"));
-// changed 2021/05/14 end
     mbedtls_sha256_starts_ret(&ctx, 0); /* 0 means SHA256 context */
     mbedtls_sha256_update_ret(&ctx, (unsigned char *)&pkcs_control_block_data.data, sizeof(pkcs_control_block_data.data));
     mbedtls_sha256_finish_ret(&ctx, hash_sha256);
     if(!memcmp(pkcs_control_block_data.hash_sha256, hash_sha256, sizeof(hash_sha256)))
     {
-// changed 2021/05/14 start
-/////        configPRINTF(("OK\r\n"));
-/////        configPRINTF(("OCTA Flash(mirror) hash check...\r\n"));
         configPRINT(("OK\r\n"));
         configPRINT(("OCTA Flash(mirror) hash check...\r\n"));
-// changed 2021/05/14 end
         mbedtls_sha256_starts_ret(&ctx, 0); /* 0 means SHA256 context */
         mbedtls_sha256_update_ret(&ctx, (unsigned char *)&pkcs_control_block_data_mirror.data, sizeof(pkcs_control_block_data_mirror.data));
         mbedtls_sha256_finish_ret(&ctx, hash_sha256);
         if(!memcmp(pkcs_control_block_data_mirror.hash_sha256, hash_sha256, sizeof(hash_sha256)))
         {
-// changed 2021/05/14 start
-/////            configPRINTF(("OK\r\n"));
             configPRINT(("OK\r\n"));
-// changed 2021/05/14 end
         }
         else
         {
-// changed 2021/05/14 start
-/////            configPRINTF(("Failed\r\n"));
-/////            configPRINTF(("recover mirror from main.\r\n"));
             configPRINT(("Failed\r\n"));
             configPRINT(("recover mirror from main.\r\n"));
-// changed 2021/05/14 end
             memcpy(&pkcs_control_block_data_image, (void *)&pkcs_control_block_data, sizeof(pkcs_control_block_data));
             update_eeprom_data_mirror_from_image();
             if (retry_counter == CHECK_EEPROM_DATA_MODE) {
@@ -604,51 +553,31 @@ static int_t check_eeprom_area(uint32_t retry_counter)
     }
     else
     {
-// changed 2021/05/14 start
-/////        configPRINTF(("Failed\r\n"));
-/////        configPRINTF(("OCTA Flash(mirror) hash check...\r\n"));
         configPRINT(("Failed\r\n"));
         configPRINT(("OCTA Flash(mirror) hash check...\r\n"));
-// changed 2021/05/14 end
         mbedtls_sha256_starts_ret(&ctx, 0); /* 0 means SHA256 context */
         mbedtls_sha256_update_ret(&ctx, (unsigned char *)&pkcs_control_block_data_mirror.data, sizeof(pkcs_control_block_data_mirror.data));
         mbedtls_sha256_finish_ret(&ctx, hash_sha256);
         if(!memcmp(pkcs_control_block_data_mirror.hash_sha256, hash_sha256, sizeof(hash_sha256)))
         {
-// changed 2021/05/14 start
-/////            configPRINTF(("OK\r\n"));
-/////            configPRINTF(("recover main from mirror.\r\n"));
             configPRINT(("OK\r\n"));
             configPRINT(("recover main from mirror.\r\n"));
-// changed 2021/05/14 end
             memcpy(&pkcs_control_block_data_image, (void *)&pkcs_control_block_data_mirror, sizeof(pkcs_control_block_data_mirror));
             update_eeprom_data_from_image();
             check_eeprom_area(retry_counter + 1);
         }
         else
         {
-// changed 2021/05/14 start
-/////            configPRINTF(("Failed\r\n"));
             configPRINT(("Failed\r\n"));
-// changed 2021/05/14 end
             if (retry_counter == CHECK_EEPROM_DATA_MODE) {
                 return ERROR_FAILURE;
             }
             while(1)
             {
                 vTaskDelay(10000);
-// changed 2021/05/14 start
-/////                configPRINTF(("------------------------------------------------\r\n"));
-/////                configPRINTF(("OCTA Flash is completely broken.\r\n"));
                 configPRINT(("------------------------------------------------\r\n"));
                 configPRINT(("OCTA Flash is completely broken.\r\n"));
-// changed 2021/05/14 end
-//                configPRINTF(("Please erase all code flash.\r\n"));
-//                configPRINTF(("And, write initial firmware using debugger/rom writer.\r\n"));
-// changed 2021/05/14 start
-/////                configPRINTF(("------------------------------------------------\r\n"));
                 configPRINT(("------------------------------------------------\r\n"));
-// changed 2021/05/14 end
             }
         }
     }
@@ -658,18 +587,40 @@ static int_t check_eeprom_area(uint32_t retry_counter)
 static int_t write_octaflash_data(uint32_t addr, void* data, size_t size)
 {
     uint32_t sector = addr;
-    /* erase */
-    for (sector = addr; sector < addr + size; sector += flash_get_sector_size(NULL,sector))
+
+    uint8_t retry = 3;
+    do
     {
-        if (flash_erase_sector(NULL,sector) < 0)
+        /* erase */
+        for (sector = addr; sector < addr + size; sector += flash_get_sector_size(NULL,sector))
+        {
+            if (flash_erase_sector(NULL,sector) < 0)
+            {
+                return ERROR_FAILURE;
+            }
+        }
+        /* write */
+        if (flash_program_page(NULL, addr, data, size) < 0)
         {
             return ERROR_FAILURE;
         }
-    }
-    /* write */
-    if (flash_program_page(NULL, addr, data, size) < 0)
-    {
-        return ERROR_FAILURE;
-    }
+	    /* verify */
+	    if( 0 == memcmp(addr, data, size) )
+	    {
+	    	/* OK */
+		    retry = 0;
+	    }
+	    else
+	    {
+		    /* Failed */
+		    configPRINT( ("Failed: retry[%d]\n\r",retry) );
+		    retry--;
+            if (retry == 0)
+            {
+                return ERROR_FAILURE;
+            }
+	    }
+    } while(retry);
+
     return NO_ERROR;
 }

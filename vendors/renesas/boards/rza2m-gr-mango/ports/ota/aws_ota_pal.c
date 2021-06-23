@@ -33,10 +33,7 @@
 /* new structure */
 #include "aws_iot_ota_agent.h"
 #include "iot_crypto.h"
-// changed 2021/05/14 start
-/////#include "iot_pkcs11.h"
 #include "core_pkcs11.h"
-// changed 2021/05/14 end
 #include "aws_ota_codesigner_certificate.h"
 #include "aws_ota_agent_config.h"
 #include "croutine.h"
@@ -542,20 +539,38 @@ OTA_Err_t prvPAL_ResetDevice( void )
 
     OTA_LOG_L1( "[%s] Resetting the device.\r\n", OTA_METHOD_NAME );
 
-	/* erase temporary area */
-	i=BOOT_LOADER_UPDATE_TEMPORARY_AREA_LOW_ADDRESS;
-	while (i<BOOT_LOADER_UPDATE_TEMPORARY_AREA_LOW_ADDRESS + image_size + BOOT_LOADER_USER_FIRMWARE_HEADER_LENGTH)
-	{
-		flash_erase_sector(NULL,i);
-		i += flash_get_sector_size(NULL,i);
-	}
-	/* program temporary area */
-	fl_ret = flash_program_page(NULL,BOOT_LOADER_UPDATE_TEMPORARY_AREA_LOW_ADDRESS,hyper,image_size + BOOT_LOADER_USER_FIRMWARE_HEADER_LENGTH);
+    uint8_t retry = 3;
+    do
+    {
+	    /* erase temporary area */
+	    i=BOOT_LOADER_UPDATE_TEMPORARY_AREA_LOW_ADDRESS;
+	    while (i<BOOT_LOADER_UPDATE_TEMPORARY_AREA_LOW_ADDRESS + image_size + BOOT_LOADER_USER_FIRMWARE_HEADER_LENGTH)
+	    {
+		    flash_erase_sector(NULL,i);
+		    i += flash_get_sector_size(NULL,i);
+	    }
+	    /* program temporary area */
+	    fl_ret = flash_program_page(NULL,BOOT_LOADER_UPDATE_TEMPORARY_AREA_LOW_ADDRESS,hyper,image_size + BOOT_LOADER_USER_FIRMWARE_HEADER_LENGTH);
 
-	if(fl_ret == -1)
-	{
-		printf("flash_program_page() returns error.\r\n");
-	}
+	    if(fl_ret == -1)
+	    {
+		    printf("flash_program_page() returns error.\r\n");
+	    }
+	    /* verify */
+	    if( 0 == memcmp(BOOT_LOADER_UPDATE_TEMPORARY_AREA_LOW_ADDRESS, hyper, image_size + BOOT_LOADER_USER_FIRMWARE_HEADER_LENGTH) )
+	    {
+	    	/* OK */
+		    retry = 0;
+		    OTA_LOG_L1( "Passed: no retry. \n\r");
+	    }
+	    else
+	    {
+		    /* Failed */
+		    OTA_LOG_L1( "Failed: retry[%d]\n\r",retry );
+		    retry--;
+	    }
+    } while(retry);
+
 	WIFI_Off();
 
 	memset(&hyper[0], 0x00, image_size + BOOT_LOADER_USER_FIRMWARE_HEADER_LENGTH);
@@ -687,10 +702,7 @@ OTA_PAL_ImageState_t prvPAL_GetPlatformImageState( void )
 /*-----------------------------------------------------------*/
 
 /* Provide access to private members for testing. */
-// changed 2021/05/14 start
-/////#ifdef AMAZON_FREERTOS_ENABLE_UNIT_TESTS
 #ifdef FREERTOS_ENABLE_UNIT_TESTS
-// changed 2021/05/14 end
     #include "aws_ota_pal_test_access_define.h"
 #endif
 
