@@ -62,6 +62,7 @@ static const st_r_drv_gpio_sc_config_t GPIO_SC_TABLE_MANUAL[] =
 {
     /* {<pin>, {<function>, <tint>, <current>}}, */
 #if defined(TARGET_GR_MANGO)
+    {GPIO_PORT_J_PIN_7, {GPIO_FUNC_OUT_LOW, GPIO_TINT_DISABLE, GPIO_CURRENT_4mA}},
 #else
     {GPIO_PORT_6_PIN_0, {GPIO_FUNC_OUT_LOW, GPIO_TINT_DISABLE, GPIO_CURRENT_4mA}},
 #endif
@@ -147,9 +148,14 @@ static const st_r_drv_gpio_sc_config_t GPIO_SC_TABLE_sdhi_simplified0[] =
 };
 static const st_r_drv_gpio_sc_config_t GPIO_SC_TABLE_sdhi_simplified1[] =
 {
+#if defined(TARGET_GR_MANGO)
+    /* {<pin>, {<function>, <tint>, <current>}}, */
+    {GPIO_PORT_6_PIN_4, {GPIO_FUNC_PERIPHERAL5, GPIO_TINT_DISABLE, GPIO_CURRENT_RESERVED}},
+#else
     /* {<pin>, {<function>, <tint>, <current>}}, */
     {GPIO_PORT_5_PIN_4, {GPIO_FUNC_PERIPHERAL3, GPIO_TINT_DISABLE, GPIO_CURRENT_RESERVED}},
     {GPIO_PORT_5_PIN_5, {GPIO_FUNC_PERIPHERAL3, GPIO_TINT_DISABLE, GPIO_CURRENT_RESERVED}},
+#endif
 };
 /* End of modification */
 

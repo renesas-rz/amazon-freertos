@@ -43,15 +43,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "FreeRTOS_IP.h"
 
 /* Demo includes */
-// removed 2021/05/14 start
-/////#include "iot_demo_runner.h"
 #include "aws_clientcredential.h"
-// removed 2021/05/14 end
 
-// added 2021/05/14 start
 /* Test application include. */
 #include "aws_test_runner.h"
-// added 2021/05/14 end
 
 /*from app.c*/
 #include "queue.h"
@@ -182,11 +177,9 @@ int_t main(void)
 //void main( void )
 void os_main_task_t( void )
 {
-// added 2021/05/14 start
-	asm("nop");
+    R_COMPILER_Nop();
     /* Perform any hardware initialization that does not require the RTOS to be
      * running.  */
-// added 2021/05/14 end
 
     while(1)
     {
@@ -219,21 +212,9 @@ void vApplicationDaemonTaskStartupHook( void )
                          ucDNSServerAddress,
                          ucMACAddress );
 
-// added 2021/05/14 start
-//        /* We should wait for the network to be up before we run any tests. */
-//        while( FreeRTOS_IsNetworkUp() == pdFALSE )
-//        {
-//            vTaskDelay(300);
-//        }
-//        FreeRTOS_printf( ( "The network is up and running\n" ) );
-// added 2021/05/14 end
-
         /* Provision the device with AWS certificate and private key. */
         vDevModeKeyProvisioning();
 
-// changed 2021/05/14 start
-/////        /* Run all demos. */
-/////        DEMO_RUNNER_RunDemos();
         vTaskDelay(10000);	// todo: this is renesas issue.
         /* Create the task to run tests. */
         xTaskCreate( TEST_RUNNER_RunTests_task,
@@ -242,7 +223,6 @@ void vApplicationDaemonTaskStartupHook( void )
                      NULL,
                      tskIDLE_PRIORITY,
                      NULL );
-// changed 2021/05/14 end
     }
 }
 
