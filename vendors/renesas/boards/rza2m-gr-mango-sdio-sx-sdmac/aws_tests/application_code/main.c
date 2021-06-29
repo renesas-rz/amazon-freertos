@@ -43,15 +43,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "FreeRTOS_IP.h"
 
 /* Demo includes */
-//210618 modified. refered from RX65N-RSK Amazon FreeRTOS Version202012.00 -->>
-//#include "iot_demo_runner.h"
-//210618 modified. <<--
 #include "aws_clientcredential.h"
 
-//210618 modified. refered from RX65N-RSK Amazon FreeRTOS Version202012.00 -->>
 /* Test application include. */
 #include "aws_test_runner.h"
-//210618 modified. <<--
 
 /*from app.c*/
 #include "queue.h"
@@ -67,7 +62,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "iot_logging_task.h"
 #include "aws_application_version.h"
 #include "aws_dev_mode_key_provisioning.h"
-#include "iot_wifi.h"   //210618 modified. refered from EBK Version202007.00
+#include "iot_wifi.h"
 
 /*from main.c*/
 #include <fcntl.h>
@@ -180,16 +175,13 @@ int_t main(void)
  * @brief The application entry point from a power on reset is PowerON_Reset_PC()
  * in resetprg.c.
  */
-//void main( void )
 void os_main_task_t( void )
 {
-//210618 modified. -->>
+    TaskHandle_t xHandle = NULL;
     R_COMPILER_Nop();
     /* Perform any hardware initialization that does not require the RTOS to be
      * running.  */
-//210618 modified. <<--
 
-//210618 modified. refered from EBK Version202007.00 -->>
 #if defined(__IDT_MODE__)
     uint32_t boot_count=(*((uint32_t*)0x50A00000)) + 1;
 #endif
@@ -229,12 +221,26 @@ void os_main_task_t( void )
                  mainTEST_RUNNER_TASK_STACK_SIZE,
                  NULL,
                  tskIDLE_PRIORITY,
-                 NULL );
-//210618 modified. <<--
-
+                 &xHandle );
     while(1)
     {
-        vTaskDelay(10000);
+    	TaskStatus_t xTaskDetails;
+        vTaskDelay(1000);
+#if defined(__IDT_MODE__)
+        vTaskGetInfo(xHandle, &xTaskDetails, pdTRUE, eInvalid);
+        if( xTaskDetails.eCurrentState == eDeleted )
+        {
+            vTaskDelay( 500 );
+            printf("WIFI_Off\n");
+            WIFI_Off();
+            while(1)
+            {
+                vTaskDelay(1000);
+            }
+        }
+#endif
+
+        
     }
 }
 /*-----------------------------------------------------------*/
@@ -243,10 +249,7 @@ static void prvMiscInitialization( void )
 {
     /* Start logging task. */
     xLoggingTaskInitialize( mainLOGGING_TASK_STACK_SIZE,
-//210618 modified. refered from EBK Version202007.00 -->>
-//                            tskIDLE_PRIORITY,
                             25,
-//210618 modified. <<--
                             mainLOGGING_MESSAGE_QUEUE_LENGTH );
 }
 /*-----------------------------------------------------------*/
