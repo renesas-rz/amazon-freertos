@@ -47,14 +47,14 @@
 #  include <immintrin.h>
 #endif
 
-#if __STDC_VERSION__ >= 201112L || __cplusplus >= 201103L || __cpp_static_assert >= 200410
+#if (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L) || (defined(__cplusplus) && __cplusplus >= 201103L) || (defined(__cpp_static_assert) && __cpp_static_assert >= 200410)
 #  define cbor_static_assert(x)         static_assert(x, #x)
 #elif !defined(__cplusplus) && defined(__GNUC__) && (__GNUC__ * 100 + __GNUC_MINOR__ >= 406) && (__STDC_VERSION__ > 199901L)
 #  define cbor_static_assert(x)         _Static_assert(x, #x)
 #else
 #  define cbor_static_assert(x)         ((void)sizeof(char[2*!!(x) - 1]))
 #endif
-#if __STDC_VERSION__ >= 199901L || defined(__cplusplus)
+#if (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || defined(__cplusplus)
 /* inline is a keyword */
 #else
 /* use the definition from cbor.h */
@@ -120,6 +120,23 @@ with these intrinsics. */
 #  define cbor_htonl        _byteswap_ulong
 #  define cbor_ntohs        _byteswap_ushort
 #  define cbor_htons        _byteswap_ushort
+#elif defined(__RX) && defined(__CCRX__)
+#  include <builtin.h>
+#  if defined(__LIT)
+#    define cbor_ntohll(x)  ((cbor_ntohl(((uint32_t)(x))) * UINT64_C(0x100000000)) + (cbor_ntohl(((x) >> 32))))
+#    define cbor_htonll     cbor_ntohll
+#    define cbor_ntohl      _builtin_revl
+#    define cbor_htonl      _builtin_revl
+#    define cbor_ntohs      _builtin_revw
+#    define cbor_htons      _builtin_revw
+#  else
+#    define cbor_ntohll
+#    define cbor_htonll
+#    define cbor_ntohl
+#    define cbor_htonl
+#    define cbor_ntohs
+#    define cbor_htons
+#  endif
 #endif
 #endif
 #ifndef cbor_ntohs
