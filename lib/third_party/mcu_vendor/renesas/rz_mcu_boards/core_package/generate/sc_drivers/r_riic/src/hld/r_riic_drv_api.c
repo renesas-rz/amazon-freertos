@@ -30,6 +30,7 @@
  *              : 08.05.2019 1.01    Fixed minor issue in riic_hld_open fn
  *              : 01.08.2019 1.03    Bump version number for V5 release
  *                                   Get clock speed from CPG driver
+ *              : 30.06.2020 1.04    Fixed transfer end interrupt enable
  *****************************************************************************/
 
 /******************************************************************************
@@ -90,7 +91,7 @@ static volatile int_t gs_channel_count[RIIC_CFG_LLD_NUM_CHANNELS];
 
 /* Define the driver function table for this implementation */
 const st_r_driver_t g_riic_driver =
-{ "I2C Device Driver", riic_hld_open, riic_hld_close, no_dev_io, no_dev_write, riic_hld_control, riic_hld_get_version };
+{ "I2C Device Driver", riic_hld_open, riic_hld_close, no_dev_read, no_dev_write, riic_hld_control, riic_hld_get_version };
 
 /******************************************************************************
  Private global variables
@@ -142,7 +143,7 @@ static int_t get_p1clk(float64_t *p1clk)
  ******************************************************************************/
 static int_t riic_hld_open (st_stream_ptr_t p_stream)
 {
-	float64_t p1clk;
+    float64_t p1clk;
     int_t ret_value = DRV_ERROR;
 
     /* determine hardware channel number */

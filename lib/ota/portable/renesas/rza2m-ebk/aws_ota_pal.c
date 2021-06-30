@@ -126,6 +126,8 @@ static uint8_t hyper[0x400000] __attribute((section("HYPER_RAM")));
 #define BOOT_LOADER_UPDATE_EXECUTE_AREA_LOW_ADDRESS 	(uint32_t)(0x20200000)
 #define BOOT_LOADER_UPDATE_TARGET_BLOCK_NUMBER (uint32_t)(FLASH_NUM_BLOCKS_CF - BOOT_LOADER_MIRROR_BLOCK_NUM_FOR_SMALL - BOOT_LOADER_MIRROR_BLOCK_NUM_FOR_MEDIUM)
 
+#define otaconfigMAX_NUM_BLOCKS_REQUEST        	128U
+
 #define BOOT_LOADER_USER_FIRMWARE_HEADER_LENGTH 0x200
 #define BOOT_LOADER_USER_FIRMWARE_DESCRIPTOR_LENGTH 0x100
 
@@ -231,7 +233,9 @@ static PACKET_BLOCK_FOR_QUEUE packet_block_for_queue2;
 static FIRMWARE_UPDATE_CONTROL_BLOCK *firmware_update_control_block_bank0 = (FIRMWARE_UPDATE_CONTROL_BLOCK*)BOOT_LOADER_UPDATE_EXECUTE_AREA_LOW_ADDRESS;
 static volatile uint32_t gs_header_flashing_task;
 static void software_reset(void);
-
+#if defined(__IDT_MODE__)
+volatile uint32_t wifi_reset_req = 0;
+#endif
 /*-----------------------------------------------------------*/
 
 OTA_Err_t prvPAL_CreateFileForRx( OTA_FileContext_t * const C )
@@ -532,6 +536,9 @@ static uint8_t * prvPAL_ReadAndAssumeCertificate( const uint8_t * const pucCertN
     return pucSignerCert;
 }
 /*-----------------------------------------------------------*/
+__attribute__((weak)) void WIFI_Off(void)
+{
+}
 
 OTA_Err_t prvPAL_ResetDevice( void )
 {
@@ -557,6 +564,7 @@ OTA_Err_t prvPAL_ResetDevice( void )
 	{
 		printf("flash_program_page() returns error.\r\n");
 	}
+	WIFI_Off();
 
 	memset(&hyper[0], 0x00, image_size + BOOT_LOADER_USER_FIRMWARE_HEADER_LENGTH);
 	software_reset();
@@ -601,6 +609,9 @@ OTA_Err_t prvPAL_SetPlatformImageState( OTA_ImageState_t eState )
 				break;
 			case eOTA_ImageState_Rejected:
 				OTA_LOG_L1( "[%s] Rejected image.\r\n", OTA_METHOD_NAME );
+#if defined(__IDT_MODE__)
+				wifi_reset_req = 1;
+#endif
 				eResult = kOTA_Err_None;
 				break;
 			case eOTA_ImageState_Aborted:
@@ -627,6 +638,9 @@ OTA_Err_t prvPAL_SetPlatformImageState( OTA_ImageState_t eState )
 				break;
 			case eOTA_ImageState_Rejected:
 				OTA_LOG_L1( "[%s] Rejected image.\r\n", OTA_METHOD_NAME );
+#if defined(__IDT_MODE__)
+				wifi_reset_req = 1;
+#endif
 				eResult = kOTA_Err_None;
 				break;
 			case eOTA_ImageState_Aborted:
