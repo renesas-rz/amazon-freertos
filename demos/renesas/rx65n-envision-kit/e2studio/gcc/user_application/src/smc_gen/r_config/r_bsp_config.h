@@ -263,7 +263,7 @@ Configuration Options
 */
 
 /* Input clock frequency in Hz (XTAL or EXTAL). */
-#define BSP_CFG_XTAL_HZ                 (24000000) /* Generated value. Do not edit this manually */
+#define BSP_CFG_XTAL_HZ                 (12000000) /* Generated value. Do not edit this manually */
 
 /* The HOCO can operate at several different frequencies. Choose which one using the macro below.
    Available frequency settings:
@@ -606,5 +606,15 @@ Configuration Options
 #define BSP_CFG_FIT_IPL_MAX                         (0xF)
 
 #define MY_BSP_CFG_SERIAL_TERM_SCI					(2)
+
+/* This macro is used to select which SCI bit-rate.
+ */
+#define MY_BSP_CFG_SERIAL_TERM_SCI_BITRATE          (115200)
+
+/* This macro is used to select which SCI interrupt priority.
+   0(low) - 15(high)
+ */
+#define MY_BSP_CFG_SERIAL_TERM_SCI_INTERRUPT_PRIORITY   (15)
+
 #endif /* R_BSP_CONFIG_REF_HEADER_FILE */
 

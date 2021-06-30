@@ -465,7 +465,7 @@ Configuration Options
          Default setting of the bank mode is linear mode.
          If the dual bank function has not been incorporated in a device, this macro should be 1.
 */
-#define BSP_CFG_CODE_FLASH_BANK_MODE    (1)
+#define BSP_CFG_CODE_FLASH_BANK_MODE    (0)
 
 /* Select the startup bank of the program when dual bank function is in dual mode.
    0 = The address range of bank 1 from FFE00000h to FFEFFFFFh and bank 0 from FFF00000h to FFFFFFFFh. (default)
@@ -620,6 +620,15 @@ Configuration Options
 
 #define WIFI_RESET_PORT_PDR    PORTJ.PDR.BIT.B3     /*PMOD PinNo.8 */
 #define WIFI_RESET_PORT_PODR   PORTJ.PODR.BIT.B3    /*PMOD PinNo.8 */
+
+/* This macro is used to select which SCI bit-rate.
+ */
+#define MY_BSP_CFG_SERIAL_TERM_SCI_BITRATE          (115200)
+
+/* This macro is used to select which SCI interrupt priority.
+   0(low) - 15(high)
+ */
+#define MY_BSP_CFG_SERIAL_TERM_SCI_INTERRUPT_PRIORITY   (15)
 
 #endif /* R_BSP_CONFIG_REF_HEADER_FILE */
 
