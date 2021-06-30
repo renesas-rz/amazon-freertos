@@ -54,13 +54,22 @@
 #include "mbedtls_error.h"
 
 /* C runtime includes. */
-#include <stdio.h>
 #include <string.h>
 
 /*-----------------------------------------------------------*/
 
 /**
- * @brief Default EC operations to ON.
+ * @defgroup pkcs11_macros PKCS #11 Implementation Macros
+ * @brief Macros for PKCS #11 software implementation.
+ */
+
+/**
+ * @defgroup pkcs11_datatypes PKCS #11 Datatypes
+ * @brief Internal datatypes for PKCS #11 software implementation.
+ */
+
+/* @ingroup pkcs11_macros
+ * @brief Suppress EC operations.
  */
 #ifndef pkcs11configSUPPRESS_ECDSA_MECHANISM
     #define pkcs11configSUPPRESS_ECDSA_MECHANISM    0
@@ -97,7 +106,6 @@ static const char * pNoLowLevelMbedTlsCodeStr = "<No-Low-Level-Code>";
 /**
  * @ingroup pkcs11_macros
  * @brief Macro for logging in PKCS #11.
- *
  */
 #define PKCS11_PRINT( X )            configPRINTF( X )
 
@@ -528,23 +536,17 @@ static CK_RV prvMbedTLS_Initialize( void )
 
     /* See explanation in prvCheckValidSessionAndModule for this exception. */
     /* coverity[misra_c_2012_rule_10_5_violation] */
-    if( xP11Context.xIsInitialized == ( CK_BBOOL ) CK_TRUE )
-    {
-        xResult = CKR_CRYPTOKI_ALREADY_INITIALIZED;
-    }
-    else
-    {
-        ( void ) memset( &xP11Context, 0, sizeof( xP11Context ) );
-        xP11Context.xObjectList.xMutex = xSemaphoreCreateMutexStatic(
-            &xP11Context.xObjectList.xMutexBuffer );
+    ( void ) memset( &xP11Context, 0, sizeof( xP11Context ) );
+    xP11Context.xObjectList.xMutex = xSemaphoreCreateMutexStatic(
+        &xP11Context.xObjectList.xMutexBuffer );
 
-        xP11Context.xSessionMutex = xSemaphoreCreateMutexStatic(
-            &xP11Context.xSessionMutexBuffer );
+    xP11Context.xSessionMutex = xSemaphoreCreateMutexStatic(
+        &xP11Context.xSessionMutexBuffer );
 
-        if( ( xP11Context.xObjectList.xMutex == NULL ) || ( xP11Context.xSessionMutex == NULL ) )
-        {
-            xResult = CKR_HOST_MEMORY;
-        }
+    if( ( xP11Context.xObjectList.xMutex == NULL ) ||
+        ( xP11Context.xSessionMutex == NULL ) )
+    {
+        xResult = CKR_HOST_MEMORY;
     }
 
     if( xResult == CKR_OK )
@@ -1169,18 +1171,26 @@ static CK_RV prvSaveDerKeyToPal( mbedtls_pk_context * pxMbedContext,
     CK_OBJECT_HANDLE xPalHandle = CK_INVALID_HANDLE;
     uint32_t ulDerBufSize = 0;
 
+    /* See explanation in prvCheckValidSessionAndModule for this exception. */
+    /* coverity[misra_c_2012_rule_10_5_violation] */
     if( ( xKeyType == CKK_EC ) && ( xIsPrivate == ( CK_BBOOL ) CK_TRUE ) )
     {
         ulDerBufSize = pkcs11_MAX_EC_PRIVATE_KEY_DER_SIZE;
     }
+    /* See explanation in prvCheckValidSessionAndModule for this exception. */
+    /* coverity[misra_c_2012_rule_10_5_violation] */
     else if( ( xKeyType == CKK_EC ) && ( xIsPrivate == ( CK_BBOOL ) CK_FALSE ) )
     {
         ulDerBufSize = pkcs11_MAX_EC_PUBLIC_KEY_DER_SIZE;
     }
+    /* See explanation in prvCheckValidSessionAndModule for this exception. */
+    /* coverity[misra_c_2012_rule_10_5_violation] */
     else if( ( xKeyType == CKK_RSA ) && ( xIsPrivate == ( CK_BBOOL ) CK_TRUE ) )
     {
         ulDerBufSize = pkcs11_MAX_PRIVATE_KEY_DER_SIZE;
     }
+    /* See explanation in prvCheckValidSessionAndModule for this exception. */
+    /* coverity[misra_c_2012_rule_10_5_violation] */
     else if( ( xKeyType == CKK_RSA ) && ( xIsPrivate == ( CK_BBOOL ) CK_FALSE ) )
     {
         ulDerBufSize = pkcs11_MAX_PUBLIC_KEY_DER_SIZE;
@@ -1208,7 +1218,7 @@ static CK_RV prvSaveDerKeyToPal( mbedtls_pk_context * pxMbedContext,
     }
     /* See explanation in prvCheckValidSessionAndModule for this exception. */
     /* coverity[misra_c_2012_rule_10_5_violation] */
-    else if( ( xResult == CKR_OK ) && ( xIsPrivate == ( CK_BBOOL ) CK_FALSE ) )
+    else if( ( xResult == CKR_OK ) )
     {
         lDerKeyLength = mbedtls_pk_write_pubkey_der( pxMbedContext, pxDerKey, ulDerBufSize );
     }
@@ -2759,6 +2769,7 @@ CK_DECLARE_FUNCTION( CK_RV, C_GetAttributeValue )( CK_SESSION_HANDLE hSession,
 
                     break;
 
+                case CKA_PUBLIC_KEY_INFO:
                 case CKA_VALUE:
 
                     /* See explanation in prvCheckValidSessionAndModule for this exception. */
@@ -2903,6 +2914,9 @@ CK_DECLARE_FUNCTION( CK_RV, C_GetAttributeValue )( CK_SESSION_HANDLE hSession,
 
         /* Free the mbedTLS structure used to parse the key. */
         mbedtls_pk_free( &xKeyContext );
+
+        /* Free the mbedTLS structure used to parse the certificate. */
+        mbedtls_x509_crt_free( &xMbedX509Context );
     }
 
     return xResult;
@@ -3320,7 +3334,8 @@ CK_DECLARE_FUNCTION( CK_RV, C_DigestUpdate )( CK_SESSION_HANDLE hSession,
         }
     }
 
-    if( ( xResult != CKR_OK ) && ( xResult != CKR_SESSION_HANDLE_INVALID ) )
+    if( ( xResult != CKR_OK ) && ( xResult != CKR_SESSION_HANDLE_INVALID ) &&
+        ( xResult != CKR_OPERATION_NOT_INITIALIZED ) )
     {
         pxSession->xOperationDigestMechanism = pkcs11NO_OPERATION;
         mbedtls_sha256_free( &pxSession->xSHA256Context );
@@ -3406,7 +3421,9 @@ CK_DECLARE_FUNCTION( CK_RV, C_DigestFinal )( CK_SESSION_HANDLE hSession,
         }
     }
 
-    if( ( xResult != CKR_OK ) && ( xResult != CKR_BUFFER_TOO_SMALL ) && ( xResult != CKR_SESSION_HANDLE_INVALID ) )
+    if( ( xResult != CKR_OK ) && ( xResult != CKR_BUFFER_TOO_SMALL ) &&
+        ( xResult != CKR_SESSION_HANDLE_INVALID ) &&
+        ( xResult != CKR_OPERATION_NOT_INITIALIZED ) )
     {
         pxSession->xOperationDigestMechanism = pkcs11NO_OPERATION;
         mbedtls_sha256_free( &pxSession->xSHA256Context );
@@ -3634,6 +3651,7 @@ CK_DECLARE_FUNCTION( CK_RV, C_Sign )( CK_SESSION_HANDLE hSession,
     /* 8 bytes added to hold ASN.1 encoding information. */
     uint8_t ecSignature[ pkcs11ECDSA_P256_SIGNATURE_LENGTH + 8 ];
     int32_t lMbedTLSResult;
+    mbedtls_md_type_t xHashType = MBEDTLS_MD_NONE;
 
 
     if( ( NULL == pulSignatureLen ) || ( NULL == pData ) )
@@ -3654,6 +3672,7 @@ CK_DECLARE_FUNCTION( CK_RV, C_Sign )( CK_SESSION_HANDLE hSession,
             xSignatureLength = pkcs11ECDSA_P256_SIGNATURE_LENGTH;
             xExpectedInputLength = pkcs11SHA256_DIGEST_LENGTH;
             pxSignatureBuffer = ecSignature;
+            xHashType = MBEDTLS_MD_SHA256;
         }
         else
         {
@@ -3686,8 +3705,13 @@ CK_DECLARE_FUNCTION( CK_RV, C_Sign )( CK_SESSION_HANDLE hSession,
             {
                 if( pdTRUE == xSemaphoreTake( pxSessionObj->xSignMutex, portMAX_DELAY ) )
                 {
+                    /* Per mbed TLS documentation, if using RSA, md_alg should
+                     * be MBEDTLS_MD_NONE. If ECDSA, md_alg should never be
+                     * MBEDTLS_MD_NONE. SHA-256 will be used for ECDSA for
+                     * consistency with the rest of the port.
+                     */
                     lMbedTLSResult = mbedtls_pk_sign( &pxSessionObj->xSignKey,
-                                                      MBEDTLS_MD_NONE,
+                                                      xHashType,
                                                       pData,
                                                       ulDataLen,
                                                       pxSignatureBuffer,
