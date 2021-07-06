@@ -178,15 +178,15 @@ int_t main(void)
 void os_main_task_t( void )
 {
     TaskHandle_t xHandle = NULL;
-    R_COMPILER_Nop();
-    /* Perform any hardware initialization that does not require the RTOS to be
-     * running.  */
-
 #if defined(__IDT_MODE__)
     uint32_t boot_count=(*((uint32_t*)0x50A00000)) + 1;
 #endif
+    /* Perform any hardware initialization that does not require the RTOS to be
+     * running.  */
+
     WIFINetworkParams_t xNetworkParams;
     memset( &xNetworkParams, 0x00, sizeof( WIFIIPConfiguration_t ) );
+    vTaskDelay(3000);
 
     /* Setup parameters. */
     xNetworkParams.ucSSIDLength = strlen( clientcredentialWIFI_SSID );
