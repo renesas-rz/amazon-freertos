@@ -183,18 +183,13 @@ int_t main(void)
 //void main( void )
 void os_main_task_t( void )
 {
-//210618 modified. -->>
-    R_COMPILER_Nop();
-    /* Perform any hardware initialization that does not require the RTOS to be
-     * running.  */
-//210618 modified. <<--
-
-//210618 modified. refered from EBK Version202007.00 -->>
+    TaskHandle_t xHandle = NULL;
 #if defined(__IDT_MODE__)
     uint32_t boot_count=(*((uint32_t*)0x23FFC000)) + 1;
 #endif
     WIFINetworkParams_t xNetworkParams;
     memset( &xNetworkParams, 0x00, sizeof( WIFIIPConfiguration_t ) );
+    vTaskDelay(3000);
 
     /* Setup parameters. */
     xNetworkParams.ucSSIDLength = strlen( clientcredentialWIFI_SSID );
@@ -228,12 +223,25 @@ void os_main_task_t( void )
                  mainTEST_RUNNER_TASK_STACK_SIZE,
                  NULL,
                  tskIDLE_PRIORITY,
-                 NULL );
-//210618 modified. <<--
+                 &xHandle );
     while(1)
     {
-        vTaskDelay(10000);
-    }
+    	TaskStatus_t xTaskDetails;
+        vTaskDelay(1000);
+#if defined(__IDT_MODE__)
+        vTaskGetInfo(xHandle, &xTaskDetails, pdTRUE, eInvalid);
+        if( xTaskDetails.eCurrentState == eDeleted )
+        {
+            vTaskDelay( 500 );
+            printf("WIFI_Off\n");
+            WIFI_Off();
+            while(1)
+            {
+                vTaskDelay(1000);
+            }
+        }
+#endif
+
 }
 /*-----------------------------------------------------------*/
 
@@ -241,10 +249,7 @@ static void prvMiscInitialization( void )
 {
     /* Start logging task. */
     xLoggingTaskInitialize( mainLOGGING_TASK_STACK_SIZE,
-//210618 modified. refered from EBK Version202007.00 -->>
-//                            tskIDLE_PRIORITY,
                             25,
-//210618 modified. <<--
                             mainLOGGING_MESSAGE_QUEUE_LENGTH );
 }
 /*-----------------------------------------------------------*/
