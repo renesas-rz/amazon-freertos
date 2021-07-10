@@ -93,12 +93,14 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/generate/system/inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/renesas/application/console/inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/renesas/application/inc&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src/renesas/hwsetup/hyperbus_setup/inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/generate/drivers/r_cache/inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/generate/drivers/r_mmu/inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/generate/sc_drivers/r_scifa/inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/generate/sc_drivers/r_cbuffer/inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/generate/sc_drivers/r_fwup&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/generate/sc_drivers/r_ostm/inc&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/generate/sc_drivers/r_hyperbus/inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/generate/drivers/r_cpg/inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/generate/drivers/r_gpio/inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/generate/drivers/r_intc/inc&quot;"/>
