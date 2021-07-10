@@ -22,7 +22,7 @@
     <stringAttribute key="com.renesas.cdt.core.secondGDBExe" value="green_dsp-elf-gdb"/>
     <booleanAttribute key="com.renesas.cdt.core.secondGDBSupport" value="false"/>
     <intAttribute key="com.renesas.cdt.core.secondGdbPortNumber" value="61237"/>
-    <stringAttribute key="com.renesas.cdt.core.serverParam" value="-g SEGGERJLINKARM -t R7S921053VCBG  -uSelect= USB -uJLinkSetting= ${workspace_loc:/${ProjName}}/${LaunchConfigName}.jlink -uLowPower= 0 -uInteface= JTAG -uIfSpeed= 4000 -uNoReset= 1 -uResetPreRun= 1 -uIdCodeBytes=  FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF -uresetOnReload= 1 -n 0 -uFlashBp= 1 -uSimulation= 0 -ucfiFlashWorkStart= 0x0 -ucfiFlashWorkEnd= 0x0 -uflashMemoryType= SerialFlash -uflashBusType= SPIBSC -uOSRestriction= 0 -uProgReWriteIRom= 1 -uCPUFrequency= 528000000 -uCECycle= 1"/>
+    <stringAttribute key="com.renesas.cdt.core.serverParam" value="-g SEGGERJLINKARM -t R7S921053VCBG  -uSelect= USB -uJLinkSetting= ${workspace_loc:/${ProjName}}/${LaunchConfigName}.jlink -uLowPower= 0 -uInteface= JTAG -uIfSpeed= 4000 -uNoReset= 1 -uResetPreRun= 1 -uIdCodeBytes=  FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF -uresetOnReload= 1 -n 0 -uFlashBp= 1 -uSimulation= 0 -ucfiFlashWorkStart= 0x0 -ucfiFlashWorkEnd= 0x0 -uflashMemoryType= SerialFlash -uflashBusType= SPIBSC -ueraseRomOnDownload= 0 -ueraseDataRomOnDownload= 0 -uOSRestriction= 0 -uProgReWriteIRom= 1 -uCPUFrequency= 528000000 -uCECycle= 1"/>
     <booleanAttribute key="com.renesas.cdt.core.startServer" value="true"/>
     <stringAttribute key="com.renesas.cdt.core.targetDevice" value="R7S921053"/>
     <booleanAttribute key="com.renesas.cdt.core.useRemoteTarget" value="true"/>
@@ -32,7 +32,7 @@
     <booleanAttribute key="com.renesas.cdt.launch.dsf.USE_DEFAULT_IO_MAP" value="true"/>
     <listAttribute key="com.renesas.cdt.launch.dsf.downloadImages">
         <listEntry value="|true|true|true|0|true|No core"/>
-        <listEntry value="bootloader/rza2_qspi_flash_ddr_bootloader.elf|true|true|false|0|true|No core"/>
+        <listEntry value="${workspace_loc:\ota_boot_proc\bootloader\rza2_qspi_flash_ddr_bootloader.elf}|true|true|false|0|true|No core"/>
     </listAttribute>
     <booleanAttribute key="com.renesas.cdt.launch.dsf.downloadImagesUpgradedV30" value="true"/>
     <stringAttribute key="com.renesas.cdt.launch.dsf.launchSeqType" value="com.renesas.cdt.launch.dsf.launchSequence.e2GdbServer"/>
@@ -57,8 +57,11 @@
     <booleanAttribute key="com.renesas.hardwaredebug.arm.jlink.connection.resetCon" value="false"/>
     <booleanAttribute key="com.renesas.hardwaredebug.arm.jlink.connection.resetPreRun" value="true"/>
     <stringAttribute key="com.renesas.hardwaredebug.arm.jlink.connection.swv.coreClockSpeed" value="0"/>
+    <booleanAttribute key="com.renesas.hardwaredebug.arm.jlink.eraseDataRomOnDownload" value="false"/>
+    <booleanAttribute key="com.renesas.hardwaredebug.arm.jlink.eraseRomOnDownload" value="false"/>
     <intAttribute key="com.renesas.hardwaredebug.arm.jlink.interface.speed" value="4000"/>
     <stringAttribute key="com.renesas.hardwaredebug.arm.jlink.interface.type" value="JTAG"/>
+    <stringAttribute key="com.renesas.hardwaredebug.arm.jlink.jlink.ipAddress" value=""/>
     <stringAttribute key="com.renesas.hardwaredebug.arm.jlink.jlink.lowPowerHandling" value="No"/>
     <stringAttribute key="com.renesas.hardwaredebug.arm.jlink.jlink.scriptFile" value=""/>
     <stringAttribute key="com.renesas.hardwaredebug.arm.jlink.jlink.settingsFile" value="${workspace_loc:/${ProjName}}/${LaunchConfigName}.jlink"/>
@@ -76,11 +79,12 @@
     <intAttribute key="com.renesas.hardwaredebug.arm.jlink.scanChain.irPre" value="0"/>
     <booleanAttribute key="com.renesas.hardwaredebug.arm.jlink.scanChain.multiDevices" value="false"/>
     <stringAttribute key="com.renesas.hardwaredebug.arm.jlink.semihosting.breakpointAddress" value=""/>
+    <booleanAttribute key="com.renesas.hardwaredebug.arm.jlink.setTZBoundaries" value="false"/>
     <booleanAttribute key="com.renesas.hardwaredebug.timemeasurement" value="true"/>
     <intAttribute key="org.eclipse.cdt.debug.gdbjtag.core.delay" value="3"/>
     <booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.doHalt" value="false"/>
     <booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.doReset" value="false"/>
-    <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.imageFileName" value="C:\Git\amazon-freertos_rza2m_20201022\projects\renesas\rza2m-ebk\e2studio\ota_boot_proc\Release\ota_boot_proc.elf"/>
+    <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.imageFileName" value="D:\Work\idt_rz\1\2\3\amazon-freertos\projects\renesas\rza2m-ebk\e2studio\ota_boot_proc\Release\ota_boot_proc.elf"/>
     <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.imageOffset" value="0"/>
     <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.initCommands" value="set arm fallback-mode arm"/>
     <booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.loadImage" value="true"/>
@@ -91,7 +95,7 @@
     <booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.setResume" value="false"/>
     <booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.setStopAt" value="true"/>
     <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.stopAt" value="main"/>
-    <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.symbolsFileName" value="C:\Git\amazon-freertos_rza2m_20201022\projects\renesas\rza2m-ebk\e2studio\ota_boot_proc\Release\ota_boot_proc.elf"/>
+    <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.symbolsFileName" value="D:\Work\idt_rz\1\2\3\amazon-freertos\projects\renesas\rza2m-ebk\e2studio\ota_boot_proc\Release\ota_boot_proc.elf"/>
     <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.symbolsOffset" value="0"/>
     <booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.useFileForImage" value="false"/>
     <booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.useFileForSymbols" value="false"/>
